@@ -1,0 +1,367 @@
+
+Step 1: Creating project 
+
+~~~~~~~~~~~~~~~~~
+[DevOps@test ~]# oc new-project istio-system
+Now using project "istio-system" on server "https://test:8443".
+
+You can add applications to this project with the 'new-app' command. For example, try:
+
+    oc new-app centos/ruby-25-centos7~https://github.com/sclorg/ruby-ex.git
+
+to build a new example application in Ruby.
+
+~~~~~~~~~~~~~~~~~~~~
+
+step 2: Setting up the platform i.e. OpenShift ref[0]
+ 
+    [0] https://istio.io/docs/setup/platform-setup/openshift/ 
+      
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[DevOps@test ~]# oc adm policy add-scc-to-group anyuid system:serviceaccounts -n istio-system
+scc "anyuid" added to groups: ["system:serviceaccounts"]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+step 3: Install Istio with the Istio CNI plugin ref[1]
+[1] https://istio.io/docs/setup/additional-setup/cni/
+
+OpenShift has CNI enabled by default.
+
+
+step 4: Customizable Install with Istioctl ref[2]
+
+[2] https://istio.io/docs/setup/install/istioctl/
+
+  a) Download the release [3]
+  [3] https://istio.io/docs/setup/getting-started/#download
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[DevOps@test ~]# curl -L https://istio.io/downloadIstio | sh -
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   107  100   107    0     0    100      0  0:00:01  0:00:01 --:--:--   100
+100  2804  100  2804    0     0   2480      0  0:00:01  0:00:01 --:--:--  2480
+Downloading istio-1.4.3 from https://github.com/istio/istio/releases/download/1.4.3/istio-1.4.3-linux.tar.gz ...  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   614    0   614    0     0    496      0 --:--:--  0:00:01 --:--:--   496
+100 32.7M  100 32.7M    0     0  3510k      0  0:00:09  0:00:09 --:--:-- 5064k
+Istio 1.4.3 Download Complete!
+
+Istio has been successfully downloaded into the istio-1.4.3 folder on your system.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+b)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[DevOps@test ~]# cd istio-1.4.3
+[DevOps@test istio-1.4.3]# 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+c) 
+~~~~~~~~~~~~~~~~~~~~~
+[DevOps@test istio-1.4.3]# export PATH=$PWD/bin:$PATH
+~~~~~~~~~~~~~~~~~~~~~
+
+step 5. Install Istio 
+https://istio.io/docs/setup/getting-started/#install
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[DevOps@test  istio-1.4.3]#  istioctl manifest apply --set profile=demo
+- Applying manifest for component Base...
+- Applying manifest for component Injector...
+- Applying manifest for component IngressGateway...
+- Applying manifest for component Kiali...
+- Applying manifest for component Pilot...
+- Applying manifest for component Policy...
+- Applying manifest for component Prometheus...
+- Applying manifest for component EgressGateway...
+- Applying manifest for component Tracing...
+- Applying manifest for component Galley...
+- Applying manifest for component Citadel...
+- Applying manifest for component Telemetry...
+- Applying manifest for component Grafana...
+✘ Finished applying manifest for component IngressGateway.
+✔ Finished applying manifest for component Kiali.
+✘ Finished applying manifest for component Pilot.
+✘ Finished applying manifest for component EgressGateway.
+✘ Finished applying manifest for component Policy.
+✔ Finished applying manifest for component Citadel.
+✔ Finished applying manifest for component Prometheus.
+✔ Finished applying manifest for component Injector.
+✘ Finished applying manifest for component Grafana.
+✔ Finished applying manifest for component Galley.
+✘ Finished applying manifest for component Telemetry.
+✔ Finished applying manifest for component Tracing.
+
+Component Pilot - manifest apply returned the following errors:
+Error: error running kubectl: exit status 1
+
+Error detail:
+
+error: unable to recognize "STDIN": no matches for kind "MeshPolicy" in version "authentication.istio.io/v1alpha1" (repeated 1 times)
+
+
+serviceaccount/istio-pilot-service-account created
+clusterrole.rbac.authorization.k8s.io/istio-pilot-istio-system created
+clusterrolebinding.rbac.authorization.k8s.io/istio-pilot-istio-system created
+configmap/istio created
+configmap/pilot-envoy-config created
+deployment.apps/istio-pilot created
+poddisruptionbudget.policy/istio-pilot created
+service/istio-pilot created
+
+
+
+Component Policy - manifest apply returned the following errors:
+Error: error running kubectl: exit status 1
+
+Error detail:
+
+error: unable to recognize "STDIN": no matches for kind "DestinationRule" in version "networking.istio.io/v1alpha3" (repeated 1 times)
+
+
+serviceaccount/istio-policy-service-account created
+clusterrole.rbac.authorization.k8s.io/istio-policy created
+clusterrolebinding.rbac.authorization.k8s.io/istio-policy-admin-role-binding-istio-system created
+configmap/policy-envoy-config created
+deployment.apps/istio-policy created
+poddisruptionbudget.policy/istio-policy created
+service/istio-policy created
+
+
+
+Component IngressGateway - manifest apply returned the following errors:
+Error: error running kubectl: exit status 1
+
+Error detail:
+
+unable to recognize "STDIN": no matches for kind "Gateway" in version "networking.istio.io/v1alpha3" (repeated 1 times)
+unable to recognize "STDIN": no matches for kind "Sidecar" in version "networking.istio.io/v1alpha3" (repeated 1 times)
+
+
+serviceaccount/istio-ingressgateway-service-account created
+deployment.apps/istio-ingressgateway created
+poddisruptionbudget.policy/ingressgateway created
+service/istio-ingressgateway created
+
+
+
+Component EgressGateway - manifest apply returned the following errors:
+Error: error running kubectl: exit status 1
+
+Error detail:
+
+unable to recognize "STDIN": no matches for kind "DestinationRule" in version "networking.istio.io/v1alpha3" (repeated 1 times)
+unable to recognize "STDIN": no matches for kind "EnvoyFilter" in version "networking.istio.io/v1alpha3" (repeated 1 times)
+unable to recognize "STDIN": no matches for kind "Gateway" in version "networking.istio.io/v1alpha3" (repeated 1 times)
+unable to recognize "STDIN": no matches for kind "VirtualService" in version "networking.istio.io/v1alpha3" (repeated 1 times)
+
+
+serviceaccount/istio-egressgateway-service-account created
+deployment.apps/istio-egressgateway created
+poddisruptionbudget.policy/istio-egressgateway created
+role.rbac.authorization.k8s.io/istio-egressgateway-sds created
+rolebinding.rbac.authorization.k8s.io/istio-egressgateway-sds created
+service/istio-egressgateway created
+
+
+
+Component Telemetry - manifest apply returned the following errors:
+Error: error running kubectl: exit status 1
+
+Error detail:
+
+unable to recognize "STDIN": no matches for kind "attributemanifest" in version "config.istio.io/v1alpha2" (repeated 2 times)
+unable to recognize "STDIN": no matches for kind "rule" in version "config.istio.io/v1alpha2" (repeated 8 times)
+unable to recognize "STDIN": no matches for kind "DestinationRule" in version "networking.istio.io/v1alpha3" (repeated 1 times)
+
+
+serviceaccount/istio-mixer-service-account created
+clusterrole.rbac.authorization.k8s.io/istio-mixer-istio-system created
+clusterrolebinding.rbac.authorization.k8s.io/istio-mixer-admin-role-binding-istio-system created
+configmap/telemetry-envoy-config created
+deployment.apps/istio-telemetry created
+handler.config.istio.io/kubernetesenv created
+handler.config.istio.io/prometheus created
+handler.config.istio.io/stdio created
+instance.config.istio.io/accesslog created
+instance.config.istio.io/attributes created
+instance.config.istio.io/requestcount created
+instance.config.istio.io/requestduration created
+instance.config.istio.io/requestsize created
+instance.config.istio.io/responsesize created
+instance.config.istio.io/tcpaccesslog created
+instance.config.istio.io/tcpbytereceived created
+instance.config.istio.io/tcpbytesent created
+instance.config.istio.io/tcpconnectionsclosed created
+instance.config.istio.io/tcpconnectionsopened created
+poddisruptionbudget.policy/istio-telemetry created
+horizontalpodautoscaler.autoscaling/istio-telemetry created
+service/istio-telemetry created
+
+
+
+Component Grafana - manifest apply returned the following errors:
+Error: error running kubectl: exit status 1
+
+Error detail:
+
+error: unable to recognize "STDIN": no matches for kind "Policy" in version "authentication.istio.io/v1alpha1" (repeated 1 times)
+
+
+configmap/istio-grafana created
+configmap/istio-grafana-configuration-dashboards-citadel-dashboard created
+configmap/istio-grafana-configuration-dashboards-galley-dashboard created
+configmap/istio-grafana-configuration-dashboards-istio-mesh-dashboard created
+configmap/istio-grafana-configuration-dashboards-istio-performance-dashboard created
+configmap/istio-grafana-configuration-dashboards-istio-service-dashboard created
+configmap/istio-grafana-configuration-dashboards-istio-workload-dashboard created
+configmap/istio-grafana-configuration-dashboards-mixer-dashboard created
+configmap/istio-grafana-configuration-dashboards-pilot-dashboard created
+deployment.apps/grafana created
+service/grafana created
+
+
+
+Component Base - manifest apply returned the following errors:
+Error: error running kubectl: exit status 1
+
+
+
+✘ Errors were logged during apply operation. Please check component installation logs above.
+
+Failed to generate and apply manifests, error: errors were logged during apply operation
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+observation:Faced some errors but all the pods are in running state 
+
+step 6: a) Checking if the pods are in running state,
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[DevOps@test istio-1.4.3]# oc get pods
+NAME                                     READY     STATUS    RESTARTS   AGE
+grafana-6565cc4b48-9gvf9                 1/1       Running   0          4m
+istio-citadel-5658cf87fd-dnfd4           1/1       Running   0          4m
+istio-egressgateway-5dc9bf47c9-p5645     1/1       Running   0          4m
+istio-galley-6c747dd756-hz2dc            1/1       Running   0          4m
+istio-ingressgateway-d686fd47f-hmhkw     1/1       Running   0          4m
+istio-pilot-677dff68d9-44v9f             1/1       Running   0          4m
+istio-policy-cf977dfc9-rtrlx             1/1       Running   0          4m
+istio-sidecar-injector-bf965ffcd-rchrw   1/1       Running   0          4m
+istio-telemetry-979788c59-88j9h          1/1       Running   1          4m
+istio-tracing-75cdd6c6b8-ckfgd           1/1       Running   0          4m
+kiali-f5cff95fc-fssvl                    1/1       Running   0          4m
+prometheus-7cb88b5945-j862g              1/1       Running   0          4m
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     b) Verify the installation by ensuring the following Kubernetes services are deployed and verify they all have an appropriate CLUSTER-IP except the jaeger-agent service:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[DevOps@test istio-1.4.3]# kubectl get svc -n istio-system
+NAME                     TYPE           CLUSTER-IP       EXTERNAL-IP                 PORT(S)                                                                                                                      AGE
+grafana                  ClusterIP      172.30.234.126   <none>                      3000/TCP                                                                                                                     6m
+istio-citadel            ClusterIP      172.30.187.10    <none>                      8060/TCP,15014/TCP                                                                                                           6m
+istio-egressgateway      ClusterIP      172.30.7.61      <none>                      80/TCP,443/TCP,15443/TCP                                                                                                     6m
+istio-galley             ClusterIP      172.30.89.173    <none>                      443/TCP,15014/TCP,9901/TCP,15019/TCP                                                                                         6m
+istio-ingressgateway     LoadBalancer   172.30.136.59    172.29.10.36,172.29.10.36   15020:30602/TCP,80:31282/TCP,443:31244/TCP,15029:30088/TCP,15030:30389/TCP,15031:31388/TCP,15032:32173/TCP,15443:30107/TCP   6m
+istio-pilot              ClusterIP      172.30.234.183   <none>                      15010/TCP,15011/TCP,8080/TCP,15014/TCP                                                                                       6m
+istio-policy             ClusterIP      172.30.249.74    <none>                      9091/TCP,15004/TCP,15014/TCP                                                                                                 6m
+istio-sidecar-injector   ClusterIP      172.30.3.95      <none>                      443/TCP                                                                                                                      6m
+istio-telemetry          ClusterIP      172.30.94.56     <none>                      9091/TCP,15004/TCP,15014/TCP,42422/TCP                                                                                       6m
+jaeger-agent             ClusterIP      None             <none>                      5775/UDP,6831/UDP,6832/UDP                                                                                                   6m
+jaeger-collector         ClusterIP      172.30.228.122   <none>                      14267/TCP,14268/TCP,14250/TCP                                                                                                6m
+jaeger-query             ClusterIP      172.30.229.143   <none>                      16686/TCP                                                                                                                    6m
+kiali                    ClusterIP      172.30.166.215   <none>                      20001/TCP                                                                                                                    6m
+prometheus               ClusterIP      172.30.177.80    <none>                      9090/TCP                                                                                                                     6m
+tracing                  ClusterIP      172.30.92.189    <none>                      80/TCP                                                                                                                       6m
+zipkin                   ClusterIP      172.30.35.108    <none>                      9411/TCP                                                                                                                     6m
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Step 7: Creating new project for application
+
+[DevOps@test istio-1.4.3]# oc new-project bookinfo-sahil
+Now using project "bookinfo-sahil" on server "https://test:8443".
+
+You can add applications to this project with the 'new-app' command. For example, try:
+
+    oc new-app centos/ruby-25-centos7~https://github.com/sclorg/ruby-ex.git
+
+to build a new example application in Ruby.
+
+
+step 8: Labeling the namespace to enable auto-injection :
+ https://istio.io/docs/examples/bookinfo/
+
+a)
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+[DevOps@test istio-1.4.3]# kubectl label namespace bookinfo-sahil istio-injection=enabled
+namespace/bookinfo-sahil labeled
+
+~~~~~~~~~~~~~~~~~~~~~~~~
+b) Deploy your application using the kubectl command:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[DevOps@test istio-1.4.3]# kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml
+service/details created
+serviceaccount/bookinfo-details created
+deployment.apps/details-v1 created
+service/ratings created
+serviceaccount/bookinfo-ratings created
+deployment.apps/ratings-v1 created
+service/reviews created
+serviceaccount/bookinfo-reviews created
+deployment.apps/reviews-v1 created
+deployment.apps/reviews-v2 created
+deployment.apps/reviews-v3 created
+service/productpage created
+serviceaccount/bookinfo-productpage created
+deployment.apps/productpage-v1 created
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+c)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[DevOps@test istio-1.4.3]#  kubectl apply -f <(istioctl kube-inject -f samples/bookinfo/platform/kube/bookinfo.yaml)
+service/details unchanged
+serviceaccount/bookinfo-details unchanged
+deployment.apps/details-v1 configured
+service/ratings unchanged
+serviceaccount/bookinfo-ratings unchanged
+deployment.apps/ratings-v1 configured
+service/reviews unchanged
+serviceaccount/bookinfo-reviews unchanged
+deployment.apps/reviews-v1 configured
+deployment.apps/reviews-v2 configured
+deployment.apps/reviews-v3 configured
+service/productpage unchanged
+serviceaccount/bookinfo-productpage unchanged
+deployment.apps/productpage-v1 configured
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+d)Confirm all services and pods are correctly defined and running:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[DevOps@test istio-1.4.3]# kubectl get services
+NAME          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+details       ClusterIP   172.30.234.91    <none>        9080/TCP   26s
+productpage   ClusterIP   172.30.110.76    <none>        9080/TCP   25s
+ratings       ClusterIP   172.30.74.107    <none>        9080/TCP   26s
+reviews       ClusterIP   172.30.173.250   <none>        9080/TCP   26s
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+e)
+
+[DevOps@test istio-1.4.3]# kubectl get pods
+NAME                             READY     STATUS    RESTARTS   AGE
+details-v1-75f7c8897b-zw2xc      1/1       Running   0          42s
+productpage-v1-b79d7cb66-ztrfr   1/1       Running   0          41s
+ratings-v1-5684b58ddd-xms5p      1/1       Running   0          41s
+reviews-v1-84dd896fbf-ls7gs      1/1       Running   0          41s
+reviews-v2-984d7dfb5-z7pbj       1/1       Running   0          41s
+reviews-v3-95f45677-lrspq        1/1       Running   0          41s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+f) To confirm that the Bookinfo application is running, send a request to it by a curl command from some pod, for example from ratings:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[DevOps@test istio-1.4.3]# kubectl exec -it $(kubectl get pod -l app=ratings -o jsonpath='{.items[0].metadata.name}') -c ratings -- curl productpage:9080/productpage | grep -o "<title>.*</title>"
+<title>Simple Bookstore App</title>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
